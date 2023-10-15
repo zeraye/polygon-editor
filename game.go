@@ -10,6 +10,7 @@ import (
 	"github.com/zeraye/polygon-editor/pkg/config"
 	"github.com/zeraye/polygon-editor/pkg/constraint"
 	"github.com/zeraye/polygon-editor/pkg/geom"
+	"github.com/zeraye/polygon-editor/pkg/offset"
 	"github.com/zeraye/polygon-editor/pkg/sample"
 )
 
@@ -25,6 +26,7 @@ type Game struct {
 	draggedPolygon  *geom.Polygon
 	selectedSegment *geom.Segment
 	selectedPolygon *geom.Polygon
+	offsetPolygon   *geom.Polygon
 }
 
 func NewGame(config *config.Config) *Game {
@@ -107,6 +109,10 @@ func (g *Game) Tapped(ev *fyne.PointEvent) {
 				// set selected segment and polygon
 				g.selectedSegment = &seg
 				g.selectedPolygon = poly
+				// repair offset polygon
+				if g.selectedPolygon != nil {
+					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				}
 				g.Refresh()
 				return
 			}
@@ -141,12 +147,36 @@ func (g *Game) TappedSecondary(ev *fyne.PointEvent) {
 				if len(poly.Points) == 3 {
 					// remove polygon
 					g.polygons = append(g.polygons[:poly_idx], g.polygons[poly_idx+1:]...)
+					// remove constraints related to polygon
+					for i, segConstraint := range g.constraints {
+						for _, p := range poly.Points {
+							if segConstraint.P0 == p || segConstraint.P1 == p {
+								// remove constraint
+								if len(g.constraints) > 0 {
+									g.constraints = append(g.constraints[:i], g.constraints[i+1:]...)
+								}
+							}
+						}
+					}
 				} else {
 					// remove point
 					err := poly.RemovePoint(point)
 					if err != nil {
 						log.Fatal(err)
 					}
+					// remove constraints related to point
+					for i, segConstraint := range g.constraints {
+						if segConstraint.P0 == point || segConstraint.P1 == point {
+							// remove constraint
+							if len(g.constraints) > 0 {
+								g.constraints = append(g.constraints[:i], g.constraints[i+1:]...)
+							}
+						}
+					}
+				}
+				// repair offset polygon
+				if g.selectedPolygon != nil {
+					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
 				}
 				g.Refresh()
 				return
@@ -169,6 +199,10 @@ func (g *Game) TappedSecondary(ev *fyne.PointEvent) {
 				new_p := geom.NewPoint((p0.X+p1.X)/2, (p0.Y+p1.Y)/2)
 				// seg.P0 is always before seg.P1
 				poly.AddPointAfter(seg.P0, new_p)
+				// repair offset polygon
+				if g.selectedPolygon != nil {
+					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				}
 				g.Refresh()
 				return
 			}
@@ -187,6 +221,10 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 		g.draggedPoint.Y += dy
 		// fix constraints
 		constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedPoint, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
+		// repair offset polygon
+		if g.selectedPolygon != nil {
+			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+		}
 		g.Refresh()
 		return
 	}
@@ -201,6 +239,10 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 		// fix constraints
 		constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P0, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 		constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
+		// repair offset polygon
+		if g.selectedPolygon != nil {
+			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+		}
 		g.Refresh()
 		return
 	}
@@ -212,6 +254,10 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 			point.X += dx
 			point.Y += dy
 		}
+		// repair offset polygon
+		if g.selectedPolygon != nil {
+			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+		}
 		g.Refresh()
 		return
 	}
@@ -220,12 +266,17 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 	for _, poly := range g.polygons {
 		for _, point := range poly.Points {
 			if geom.DistanceToPoint(*mouse_pos, *point) < g.config.UI.PointRadius {
-				// set dragged point and move it
+				// set dragged point, poly and move it
 				g.draggedPoint = point
+				g.draggedPolygon = poly
 				g.draggedPoint.X += dx
 				g.draggedPoint.Y += dy
 				// fix constraints
 				constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedPoint, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
+				// repair offset polygon
+				if g.selectedPolygon != nil {
+					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				}
 				g.Refresh()
 				return
 			}
@@ -236,8 +287,9 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 	for _, poly := range g.polygons {
 		for _, seg := range poly.Segments() {
 			if geom.DistanceToSegment(*mouse_pos, seg) < g.config.Miscellaneous.LineCatchError {
-				// set dragged segment and move it
+				// set dragged segment, poly and move it
 				g.draggedSegment = &seg
+				g.draggedPolygon = poly
 				g.draggedSegment.P0.X += dx
 				g.draggedSegment.P0.Y += dy
 				g.draggedSegment.P1.X += dx
@@ -245,6 +297,10 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 				// fix constraints
 				constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P0, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 				constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
+				// repair offset polygon
+				if g.selectedPolygon != nil {
+					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				}
 				g.Refresh()
 				return
 			}
@@ -259,6 +315,10 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 			for _, point := range g.draggedPolygon.Points {
 				point.X += dx
 				point.Y += dy
+			}
+			// repair offset polygon
+			if g.selectedPolygon != nil {
+				g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
 			}
 			g.Refresh()
 			return

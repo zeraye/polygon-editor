@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/zeraye/polygon-editor/pkg/config"
 	"github.com/zeraye/polygon-editor/pkg/constraint"
+	"github.com/zeraye/polygon-editor/pkg/offset"
 )
 
 type Menu struct {
@@ -66,29 +67,55 @@ func SelectConstraintWrapper(g *Game) func(string) {
 			// fix constraints
 			constraint.FixSegmentConstraint(g.constraints, g.polygons, g.selectedSegment.P0, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 			constraint.FixSegmentConstraint(g.constraints, g.polygons, g.selectedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
+			// repair offset polygon
+			if g.selectedPolygon != nil {
+				g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+			}
 			g.Refresh()
 		}
 	}
 }
 
-// TODO: set offset on selected polygon
+// set offset on selected polygon
 func SetOffsetWrapper(g *Game) func() {
 	return func() {
 		if g.selectedPolygon == nil {
 			return
 		}
-		panic("Not implemented")
+		// remove constraints related to offset polygon
+		for i, segConstraint := range g.constraints {
+			for _, p := range g.selectedPolygon.Points {
+				if segConstraint.P0 == p || segConstraint.P1 == p {
+					// remove constraint
+					if len(g.constraints) > 0 {
+						g.constraints = append(g.constraints[:i], g.constraints[i+1:]...)
+					}
+				}
+			}
+		}
+		// set current polygon to offset
+		g.selectedPolygon.Points = g.offsetPolygon.Points
+		// clean up old polygons
+		g.selectedPolygon = nil
+		g.selectedSegment = nil
+		g.offsetPolygon = nil
+		g.menu.slider.SetValue(0)
+		g.menu.selector.Disable()
+		g.Refresh()
 	}
 }
 
-// TODO: preview offset on selected polygon
-func PreviewOffsetWrapper(g *Game) func(float64) {
-	return func(offset float64) {
+// preview offset on selected polygon
+func PreviewOffsetWrapper(g *Game, sliderBind binding.ExternalFloat) func(float64) {
+	return func(value float64) {
 		if g.selectedPolygon == nil {
 			g.menu.slider.SetValue(0)
+			sliderBind.Set(0)
 			return
 		}
-		panic("Not implemented")
+		sliderBind.Set(value)
+		g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, value)
+		g.Refresh()
 	}
 }
 
@@ -108,7 +135,7 @@ func (m *Menu) BuildUI(g *Game) fyne.CanvasObject {
 	sliderBind := binding.BindFloat(&sliderValue)
 	slider := widget.NewSliderWithData(0, 30, sliderBind)
 	slider.Step = 0.01
-	slider.OnChanged = PreviewOffsetWrapper(g)
+	slider.OnChanged = PreviewOffsetWrapper(g, sliderBind)
 	sliderButton := widget.NewButton("Set offset", SetOffsetWrapper(g))
 	sliderButton.Disable()
 	m.slider = slider

@@ -54,6 +54,20 @@ func (gr *gameRenderer) Draw(width, height int) image.Image {
 		img.Set(img.Bounds().Dx()-1, y, draw.RGBAToColor(gr.game.config.UI.RasterBorderColorRGBA))
 	}
 
+	// draw offset polygon
+	if gr.game.offsetPolygon != nil {
+		draw.DrawPolygon(
+			*gr.game.offsetPolygon,
+			nil,
+			draw.RGBAToColor(gr.game.config.UI.PointColorRGBA),
+			draw.RGBAToColor(gr.game.config.UI.SegmentColorRGBA),
+			draw.RGBAToColor(gr.game.config.UI.SelectedSegmentColorRGBA),
+			gr.game.config.UI.PointRadius,
+			gr.game.config.UI.FillPoints,
+			img,
+		)
+	}
+
 	// draw polygons
 	for _, poly := range gr.game.polygons {
 		draw.DrawPolygon(
