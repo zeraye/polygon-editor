@@ -32,8 +32,7 @@ func GenerateSampleComplexPolygon() ([]*geom.Polygon, []*constraint.SegmentConst
 	p9 := geom.NewPoint(593, 571)
 	p10 := geom.NewPoint(380, 674)
 	p11 := geom.NewPoint(299, 452)
-	p12 := geom.NewPoint(179, 591)
-	poly.Points = append(poly.Points, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12)
+	poly.Points = append(poly.Points, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
 	c0 := constraint.NewSegmentConstraint(p4, p5, constraint.HORIZONTAL)
 	return []*geom.Polygon{poly}, []*constraint.SegmentConstraint{c0}
 }
