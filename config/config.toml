@@ -1,0 +1,23 @@
+[Window]
+Name = "polygon-editor"
+Width = 1000
+Height = 800
+FixedSize = true
+
+[UI]
+PointColorRGBA = [0, 0, 0, 255]
+SegmentColorRGBA = [0, 0, 0, 255]
+SelectedSegmentColorRGBA = [0, 0, 255, 255]
+BackgroundColorRGBA = [255, 255, 255, 255]
+SecondaryBackgroundColorRGBA = [82, 78, 183, 255]
+RasterBorderColorRGBA = [0, 0, 0, 255]
+ConstraintCharColorRGBA = [255, 0, 0, 255]
+RasterWidth = 800
+RasterHeight = 800
+PointRadius = 10
+FillPoints = true
+
+[Miscellaneous]
+LineCatchError = 5
+MoveOverlapPointLength = 100
+AllowMoveOverlapPoint = false
