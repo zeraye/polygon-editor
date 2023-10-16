@@ -133,7 +133,7 @@ func (m *Menu) BuildUI(g *Game) fyne.CanvasObject {
 
 	sliderValue := 0.0
 	sliderBind := binding.BindFloat(&sliderValue)
-	slider := widget.NewSliderWithData(0, 30, sliderBind)
+	slider := widget.NewSliderWithData(0, m.config.Miscellaneous.MaxSliderValue, sliderBind)
 	slider.Step = 0.01
 	slider.OnChanged = PreviewOffsetWrapper(g, sliderBind)
 	sliderButton := widget.NewButton("Set offset", SetOffsetWrapper(g))

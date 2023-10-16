@@ -39,6 +39,7 @@ type MiscellaneousConfig struct {
 	LineCatchError         float64
 	MoveOverlapPointLength float64
 	AllowMoveOverlapPoint  bool
+	MaxSliderValue         float64
 }
 
 func Load(r io.Reader) (*Config, error) {

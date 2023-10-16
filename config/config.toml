@@ -21,3 +21,4 @@ FillPoints = true
 LineCatchError = 5
 MoveOverlapPointLength = 100
 AllowMoveOverlapPoint = false
+MaxSliderValue = 50
