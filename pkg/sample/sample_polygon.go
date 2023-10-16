@@ -37,8 +37,27 @@ func GenerateSampleComplexPolygon() ([]*geom.Polygon, []*constraint.SegmentConst
 	return []*geom.Polygon{poly}, []*constraint.SegmentConstraint{c0}
 }
 
+func GenerateSampleComplex2Polygon() ([]*geom.Polygon, []*constraint.SegmentConstraint) {
+	poly := geom.NewPolygon()
+	poly.IsClosed = true
+	p0 := geom.NewPoint(109, 429)
+	p1 := geom.NewPoint(423, 443)
+	p2 := geom.NewPoint(409, 674)
+	p3 := geom.NewPoint(252, 670)
+	p4 := geom.NewPoint(258, 616)
+	p5 := geom.NewPoint(361, 617)
+	p6 := geom.NewPoint(361, 477)
+	p7 := geom.NewPoint(156, 466)
+	p8 := geom.NewPoint(147, 612)
+	p9 := geom.NewPoint(213, 612)
+	p10 := geom.NewPoint(210, 668)
+	p11 := geom.NewPoint(91, 660)
+	poly.Points = append(poly.Points, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
+	return []*geom.Polygon{poly}, []*constraint.SegmentConstraint{}
+}
+
 func GenerateSamplePolygons() ([]*geom.Polygon, []*constraint.SegmentConstraint) {
 	polygons1, constraints1 := GenerateSampleSimplePolygon()
-	polygons2, constraints2 := GenerateSampleComplexPolygon()
+	polygons2, constraints2 := GenerateSampleComplex2Polygon()
 	return append(polygons1, polygons2...), append(constraints1, constraints2...)
 }
