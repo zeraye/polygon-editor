@@ -26,7 +26,7 @@ func GenerateSampleComplexPolygon() ([]*geom.Polygon, []*constraint.SegmentConst
 	p3 := geom.NewPoint(298, 233)
 	p4 := geom.NewPoint(322, 124)
 	p5 := geom.NewPoint(677, 124)
-	p6 := geom.NewPoint(961, 164)
+	p6 := geom.NewPoint(780, 164)
 	p7 := geom.NewPoint(762, 187)
 	p8 := geom.NewPoint(396, 338)
 	p9 := geom.NewPoint(593, 571)
