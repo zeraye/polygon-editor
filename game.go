@@ -26,7 +26,7 @@ type Game struct {
 	draggedPolygon  *geom.Polygon
 	selectedSegment *geom.Segment
 	selectedPolygon *geom.Polygon
-	offsetPolygon   *geom.Polygon
+	offsetPolygons  []*geom.Polygon
 }
 
 func NewGame(config *config.Config) *Game {
@@ -111,7 +111,7 @@ func (g *Game) Tapped(ev *fyne.PointEvent) {
 				g.selectedPolygon = poly
 				// repair offset polygon
 				if g.selectedPolygon != nil {
-					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 				}
 				g.Refresh()
 				return
@@ -176,7 +176,7 @@ func (g *Game) TappedSecondary(ev *fyne.PointEvent) {
 				}
 				// repair offset polygon
 				if g.selectedPolygon != nil {
-					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 				}
 				g.Refresh()
 				return
@@ -201,7 +201,7 @@ func (g *Game) TappedSecondary(ev *fyne.PointEvent) {
 				poly.AddPointAfter(seg.P0, new_p)
 				// repair offset polygon
 				if g.selectedPolygon != nil {
-					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 				}
 				g.Refresh()
 				return
@@ -223,7 +223,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 		constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedPoint, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 		// repair offset polygon
 		if g.selectedPolygon != nil {
-			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+			g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 		}
 		g.Refresh()
 		return
@@ -241,7 +241,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 		constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 		// repair offset polygon
 		if g.selectedPolygon != nil {
-			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+			g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 		}
 		g.Refresh()
 		return
@@ -256,7 +256,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 		}
 		// repair offset polygon
 		if g.selectedPolygon != nil {
-			g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+			g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 		}
 		g.Refresh()
 		return
@@ -275,7 +275,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 				constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedPoint, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 				// repair offset polygon
 				if g.selectedPolygon != nil {
-					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 				}
 				g.Refresh()
 				return
@@ -299,7 +299,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 				constraint.FixSegmentConstraint(g.constraints, g.polygons, g.draggedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 				// repair offset polygon
 				if g.selectedPolygon != nil {
-					g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 				}
 				g.Refresh()
 				return
@@ -318,7 +318,7 @@ func (g *Game) Dragged(ev *fyne.DragEvent) {
 			}
 			// repair offset polygon
 			if g.selectedPolygon != nil {
-				g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 			}
 			g.Refresh()
 			return

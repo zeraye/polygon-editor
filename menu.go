@@ -69,7 +69,7 @@ func SelectConstraintWrapper(g *Game) func(string) {
 			constraint.FixSegmentConstraint(g.constraints, g.polygons, g.selectedSegment.P1, g.config.Miscellaneous.MoveOverlapPointLength, g.config.Miscellaneous.AllowMoveOverlapPoint)
 			// repair offset polygon
 			if g.selectedPolygon != nil {
-				g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value)
+				g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)
 			}
 			g.Refresh()
 		}
@@ -89,16 +89,23 @@ func SetOffsetWrapper(g *Game) func() {
 					// remove constraint
 					if len(g.constraints) > 0 {
 						g.constraints = append(g.constraints[:i], g.constraints[i+1:]...)
+
 					}
 				}
 			}
 		}
-		// set current polygon to offset
-		g.selectedPolygon.Points = g.offsetPolygon.Points
+		// remove selected polygon
+		for i, poly := range g.polygons {
+			if poly == g.selectedPolygon {
+				g.polygons = append(g.polygons[:i], g.polygons[i+1:]...)
+			}
+		}
+		// add offset polygons to polygons
+		g.polygons = append(g.polygons, g.offsetPolygons...)
 		// clean up old polygons
 		g.selectedPolygon = nil
 		g.selectedSegment = nil
-		g.offsetPolygon = nil
+		g.offsetPolygons = nil
 		g.menu.slider.SetValue(0)
 		g.menu.selector.Disable()
 		g.Refresh()
@@ -114,7 +121,7 @@ func PreviewOffsetWrapper(g *Game, sliderBind binding.ExternalFloat) func(float6
 			return
 		}
 		sliderBind.Set(value)
-		g.offsetPolygon = offset.CreateOffset(g.selectedPolygon, value)
+		g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, value, g.config.Miscellaneous.OffsetAlgorithm)
 		g.Refresh()
 	}
 }

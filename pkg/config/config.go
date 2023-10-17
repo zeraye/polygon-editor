@@ -24,6 +24,7 @@ type WindowConfig struct {
 type UIConfig struct {
 	PointColorRGBA               [4]uint8
 	SegmentColorRGBA             [4]uint8
+	OffsetSegmentColorRGBA       [4]uint8
 	SelectedSegmentColorRGBA     [4]uint8
 	BackgroundColorRGBA          [4]uint8
 	SecondaryBackgroundColorRGBA [4]uint8
@@ -40,6 +41,7 @@ type MiscellaneousConfig struct {
 	MoveOverlapPointLength float64
 	AllowMoveOverlapPoint  bool
 	MaxSliderValue         float64
+	OffsetAlgorithm        string
 }
 
 func Load(r io.Reader) (*Config, error) {
