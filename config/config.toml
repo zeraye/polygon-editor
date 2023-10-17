@@ -24,4 +24,4 @@ MoveOverlapPointLength = 100
 AllowMoveOverlapPoint = false
 MaxSliderValue = 50
 OffsetAlgorithm = "goclipper2"  # "goclipper2" | "custom1" | "custom2"
-LineDrawAlgorithm = "xiaolinwu" # "bresenham" | "xiaolinwu"
+LineDrawAlgorithm = "bresenham" # "bresenham" | "xiaolinwu"
