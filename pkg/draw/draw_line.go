@@ -30,6 +30,16 @@ func plot(x, y float64, c float64, color color.Color, img *image.RGBA) {
 	img.Set(int(x), int(y), new_color)
 }
 
+func DrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA, drawLineAlgorithm string) {
+	if drawLineAlgorithm == "bresenham" {
+		BresenhamDrawLine(p0, p1, color, img)
+	} else if drawLineAlgorithm == "xiaolinwu" {
+		XiaolinWuDrawLine(p0, p1, color, img)
+	} else {
+		panic("Invalid draw line algorithm")
+	}
+}
+
 // Xiaolin Wu's line algorithm: https://en.wikipedia.org/wiki/Xiaolin_Wu%27s_line_algorithm
 func XiaolinWuDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
 	steep := math.Abs(p1.Y-p0.Y) > math.Abs(p1.X-p0.X)

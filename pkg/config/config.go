@@ -42,6 +42,7 @@ type MiscellaneousConfig struct {
 	AllowMoveOverlapPoint  bool
 	MaxSliderValue         float64
 	OffsetAlgorithm        string
+	LineDrawAlgorithm      string
 }
 
 func Load(r io.Reader) (*Config, error) {
