@@ -58,6 +58,7 @@ func GenerateSampleComplex2Polygon() ([]*geom.Polygon, []*constraint.SegmentCons
 
 func GenerateSamplePolygons() ([]*geom.Polygon, []*constraint.SegmentConstraint) {
 	polygons1, constraints1 := GenerateSampleSimplePolygon()
-	polygons2, constraints2 := GenerateSampleComplex2Polygon()
-	return append(polygons1, polygons2...), append(constraints1, constraints2...)
+	polygons2, constraints2 := GenerateSampleComplexPolygon()
+	polygons3, constraints3 := GenerateSampleComplex2Polygon()
+	return append(polygons1, append(polygons2, polygons3...)...), append(constraints1, append(constraints2, constraints3...)...)
 }
