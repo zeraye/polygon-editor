@@ -45,3 +45,9 @@ Lines are drawn using:
 
 - [Bresenham'slinealgorithm](https://en.wikipedia.org/wiki/Bresenham's_line_algorithm)
 - [Xiaolin Wu's line algorithm](https://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm) (anti-aliasing)
+
+## screenshots
+
+![polygons](images/polygons.png)
+![constraint selector](images/constraint.png)
+![offset](images/offset.png)
