@@ -10,7 +10,7 @@ func CreateOffset(poly *geom.Polygon, offset float64, offsetAlgorithm string) []
 	} else if offsetAlgorithm == "custom1" {
 		return createOffsetCustom1(poly, offset)
 	} else if offsetAlgorithm == "custom2" {
-		return createOffsetCustom2(poly, offset)
+		return createOffsetCustom2(poly, offset, "miter")
 	}
 	panic("Invalid offset algorithm")
 }
