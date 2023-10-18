@@ -12,7 +12,6 @@ func createOffsetGoclipper2(poly *geom.Polygon, offset float64) []*geom.Polygon 
 		curr_idx int,
 		prev_idx int,
 	) float64 {
-		// log.Println("my callback is called with params ", curr_idx, prev_idx)
 		return offset
 	}
 
