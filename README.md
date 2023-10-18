@@ -1,6 +1,6 @@
 # polygon-editor
 
-**polygon-editor** is a desktop polygon editor with [multi-os support](https://github.com/fyne-io/fyne/wiki/Supported-Platforms). It allows you to create, edit and delete polygons polygonal chains.
+**polygon-editor** is a desktop polygon editor with [multi-os support](https://github.com/fyne-io/fyne/wiki/Supported-Platforms). It allows you to create, edit and delete polygonal chains.
 
 ## controls
 
