@@ -118,3 +118,24 @@ func IntersectPoint(pt1a, pt1b, pt2a, pt2b *Point) *Point {
 		return NewPoint(x, m1*x+b1)
 	}
 }
+
+func SegmentsIntersect(p0, p1, p2, p3 *Point) bool {
+	intersect := (CrossProduct3(p0, p2, p3)*CrossProduct3(p1, p2, p3) < 0) &&
+		(CrossProduct3(p2, p0, p1)*CrossProduct3(p3, p0, p1) < 0)
+
+	tol := 1e-5
+
+	if intersect &&
+		((math.Abs(p0.X-p2.X) < tol && math.Abs(p0.Y-p2.Y) < tol) ||
+			(math.Abs(p1.X-p3.X) < tol && math.Abs(p1.Y-p3.Y) < tol)) {
+		intersect = false
+	}
+
+	if intersect &&
+		((math.Abs(p0.X-p1.X) < tol && math.Abs(p0.Y-p1.Y) < tol) ||
+			(math.Abs(p2.X-p3.X) < tol && math.Abs(p2.Y-p3.Y) < tol)) {
+		intersect = false
+	}
+
+	return intersect
+}
