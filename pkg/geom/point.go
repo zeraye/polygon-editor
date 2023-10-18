@@ -48,6 +48,10 @@ func CrossProduct(p0, p1 *Point) float64 {
 	return p0.Y*p1.X - p1.Y*p0.X
 }
 
+func CrossProduct3(p0, p1, p2 *Point) float64 {
+	return (p1.X-p0.X)*(p2.Y-p1.Y) - (p1.Y-p0.Y)*(p2.X-p1.X)
+}
+
 func DotProduct(p0, p1 *Point) float64 {
 	return p0.X*p1.X + p0.Y*p1.Y
 }
