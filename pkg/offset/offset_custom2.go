@@ -100,9 +100,9 @@ func createOffsetCustom2(poly *geom.Polygon, offset float64, joinType string) []
 		if intersectBool[i] {
 			curr, next, _curr, _next := i, i+1, intersectInt[i], intersectInt[i]+1
 			curr = (curr + editCounter) % len(pts)
-			next += (next + editCounter) % len(pts)
-			_curr += (_curr + editCounter) % len(pts)
-			_next += (_next + editCounter) % len(pts)
+			next = (next + editCounter) % len(pts)
+			_curr = (_curr + editCounter) % len(pts)
+			_next = (_next + editCounter) % len(pts)
 			if curr < 0 || next < 0 || _curr < 0 || _next < 0 {
 				continue
 			}
