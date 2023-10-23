@@ -64,6 +64,15 @@ func createOffsetCustom2(poly *geom.Polygon, offset float64, joinType string) []
 	pts := new_poly.Points
 	points := poly.Points
 	num_points := len(points)
+	// check if offset is reversed
+	cos := geom.DotProduct(normsCustom2(1, points), normsCustom2(0, points))
+	p := geom.NewPoint(
+		points[1].X+(normsCustom2(0, points).X+normsCustom2(1, points).X)*(offset/(cos+1)),
+		points[1].Y+(normsCustom2(0, points).Y+normsCustom2(1, points).Y)*(offset/(cos+1)),
+	)
+	if geom.IsPointInsidePolygon(*poly, *p) {
+		offset *= -1
+	}
 	for curr := range points {
 		prev := (curr + num_points - 1) % num_points
 		point := createOffsetPointCustom2(prev, curr, points, offset, joinType)
