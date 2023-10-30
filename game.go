@@ -20,6 +20,7 @@ type Game struct {
 	config          *config.Config
 	menu            *Menu
 	polygons        []*geom.Polygon
+	widths          map[*geom.Point]float64
 	constraints     []*constraint.SegmentConstraint
 	draggedPoint    *geom.Point
 	draggedSegment  *geom.Segment
@@ -27,12 +28,15 @@ type Game struct {
 	selectedSegment *geom.Segment
 	selectedPolygon *geom.Polygon
 	offsetPolygons  []*geom.Polygon
+	lineAlgorithm   string
 }
 
 func NewGame(config *config.Config) *Game {
 	menu := NewMenu(config)
 	polygons, constraints := sample.GenerateSamplePolygons()
-	game := &Game{config: config, menu: menu, polygons: polygons, constraints: constraints}
+	widths := make(map[*geom.Point]float64)
+	lineAlgorithm := config.Miscellaneous.LineDrawAlgorithm
+	game := &Game{config: config, menu: menu, polygons: polygons, constraints: constraints, widths: widths, lineAlgorithm: lineAlgorithm}
 	game.ExtendBaseWidget(game)
 
 	return game
@@ -109,6 +113,12 @@ func (g *Game) Tapped(ev *fyne.PointEvent) {
 				// set selected segment and polygon
 				g.selectedSegment = &seg
 				g.selectedPolygon = poly
+				val, ok := g.widths[seg.P0]
+				if ok {
+					g.menu.widthSlider.SetValue(val)
+				} else {
+					g.menu.widthSlider.SetValue(1)
+				}
 				// repair offset polygon
 				if g.selectedPolygon != nil {
 					g.offsetPolygons = offset.CreateOffset(g.selectedPolygon, g.menu.slider.Value, g.config.Miscellaneous.OffsetAlgorithm)

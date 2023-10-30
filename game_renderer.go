@@ -68,6 +68,7 @@ func (gr *gameRenderer) Draw(width, height int) image.Image {
 				gr.game.config.UI.FillPoints,
 				img,
 				gr.game.config.Miscellaneous.LineDrawAlgorithm,
+				nil,
 			)
 		}
 	}
@@ -84,7 +85,9 @@ func (gr *gameRenderer) Draw(width, height int) image.Image {
 			true,
 			gr.game.config.UI.FillPoints,
 			img,
-			gr.game.config.Miscellaneous.LineDrawAlgorithm,
+			// gr.game.config.Miscellaneous.LineDrawAlgorithm,
+			gr.game.lineAlgorithm,
+			gr.game.widths,
 		)
 	}
 

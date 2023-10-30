@@ -30,18 +30,20 @@ func plot(x, y float64, c float64, color color.Color, img *image.RGBA) {
 	img.Set(int(x), int(y), new_color)
 }
 
-func DrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA, drawLineAlgorithm string) {
+func DrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA, drawLineAlgorithm string, w float64) {
 	if drawLineAlgorithm == "bresenham" {
-		BresenhamDrawLine(p0, p1, color, img)
+		BresenhamDrawLine(p0, p1, color, img, w)
 	} else if drawLineAlgorithm == "xiaolinwu" {
-		XiaolinWuDrawLine(p0, p1, color, img)
+		XiaolinWuDrawLine(p0, p1, color, img, w)
+	} else if drawLineAlgorithm == "bresenhamsymmetric" {
+		BresenhamDrawLineSymmetric(p0, p1, color, img, w)
 	} else {
 		panic("Invalid draw line algorithm")
 	}
 }
 
 // Xiaolin Wu's line algorithm: https://en.wikipedia.org/wiki/Xiaolin_Wu%27s_line_algorithm
-func XiaolinWuDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
+func XiaolinWuDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA, _ float64) {
 	steep := math.Abs(p1.Y-p0.Y) > math.Abs(p1.X-p0.X)
 
 	if steep {
@@ -106,24 +108,30 @@ func XiaolinWuDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
 
 }
 
+func BresenhamDrawLineSymmetric(p0, p1 geom.Point, color color.Color, img *image.RGBA, w float64) {
+	mid_p := geom.NewPoint((p0.X+p1.X)/2, (p0.Y+p1.Y)/2)
+	BresenhamDrawLine(p0, *mid_p, color, img, w)
+	BresenhamDrawLine(*mid_p, p1, color, img, w)
+}
+
 // Bresenham's line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-func BresenhamDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
+func BresenhamDrawLine(p0, p1 geom.Point, color color.Color, img *image.RGBA, w float64) {
 	if math.Abs(p1.Y-p0.Y) < math.Abs(p1.X-p0.X) {
 		if p0.X > p1.X {
-			DrawLineLow(p1, p0, color, img)
+			DrawLineLow(p1, p0, color, img, w)
 		} else {
-			DrawLineLow(p0, p1, color, img)
+			DrawLineLow(p0, p1, color, img, w)
 		}
 	} else {
 		if p0.Y > p1.Y {
-			DrawLineHigh(p1, p0, color, img)
+			DrawLineHigh(p1, p0, color, img, w)
 		} else {
-			DrawLineHigh(p0, p1, color, img)
+			DrawLineHigh(p0, p1, color, img, w)
 		}
 	}
 }
 
-func DrawLineLow(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
+func DrawLineLow(p0, p1 geom.Point, color color.Color, img *image.RGBA, w float64) {
 	dx := p1.X - p0.X
 	dy := p1.Y - p0.Y
 	yi := 1.0
@@ -135,7 +143,9 @@ func DrawLineLow(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
 	y := p0.Y
 
 	for x := p0.X; x < p1.X; x++ {
-		img.Set(int(x), int(y), color)
+		for i := 0; i < int(w); i++ {
+			img.Set(int(x), int(y)+i-int(w/2), color)
+		}
 		if D > 0 {
 			y += yi
 			D += 2 * (dy - dx)
@@ -145,7 +155,7 @@ func DrawLineLow(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
 	}
 }
 
-func DrawLineHigh(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
+func DrawLineHigh(p0, p1 geom.Point, color color.Color, img *image.RGBA, w float64) {
 	dx := p1.X - p0.X
 	dy := p1.Y - p0.Y
 	xi := 1.0
@@ -157,7 +167,9 @@ func DrawLineHigh(p0, p1 geom.Point, color color.Color, img *image.RGBA) {
 	x := p0.X
 
 	for y := p0.Y; y < p1.Y; y++ {
-		img.Set(int(x), int(y), color)
+		for i := 0; i < int(w); i++ {
+			img.Set(int(x)+i-int(w/2), int(y), color)
+		}
 		if D > 0 {
 			x += xi
 			D += 2 * (dx - dy)

@@ -31,7 +31,7 @@ func DrawCircle(centre geom.Point, radius float64, color color.Color, fill bool,
 
 func drawCircleSet(x0, y0, x1, y1 float64, color color.Color, fill bool, img *image.RGBA) {
 	if fill {
-		BresenhamDrawLine(*geom.NewPoint(x0, y0), *geom.NewPoint(x1, y1), color, img)
+		BresenhamDrawLine(*geom.NewPoint(x0, y0), *geom.NewPoint(x1, y1), color, img, 1)
 	} else {
 		img.Set(int(x0), int(y0), color)
 		img.Set(int(x1), int(y1), color)

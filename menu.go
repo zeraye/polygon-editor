@@ -1,6 +1,7 @@
 package polygon_editor
 
 import (
+	"fmt"
 	"log"
 
 	"fyne.io/fyne/v2"
@@ -16,8 +17,10 @@ import (
 type Menu struct {
 	config       *config.Config
 	selector     *widget.Select
+	lineSelector *widget.Select
 	sliderButton *widget.Button
 	slider       *widget.Slider
+	widthSlider  *widget.Slider
 }
 
 func NewMenu(config *config.Config) *Menu {
@@ -126,6 +129,29 @@ func PreviewOffsetWrapper(g *Game, sliderBind binding.ExternalFloat) func(float6
 	}
 }
 
+func WidthSliderWrapper(g *Game, label *widget.Label) func(float64) {
+	return func(value float64) {
+		if g.selectedSegment != nil {
+			g.widths[g.selectedSegment.P0] = value
+		}
+		g.menu.widthSlider.SetValue(value)
+		label.Text = fmt.Sprintf("Width (%d)", int(value))
+		label.Refresh()
+		g.Refresh()
+	}
+}
+
+func LineSelectorWrapper(g *Game) func(string) {
+	return func(option string) {
+		if g.menu.lineSelector == nil {
+			return
+		}
+		g.menu.lineSelector.Selected = option
+		g.lineAlgorithm = option
+		g.menu.lineSelector.Refresh()
+	}
+}
+
 func (m *Menu) BuildUI(g *Game) fyne.CanvasObject {
 	settingsLabel := widget.NewLabelWithStyle("Settings", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 
@@ -148,6 +174,15 @@ func (m *Menu) BuildUI(g *Game) fyne.CanvasObject {
 	m.slider = slider
 	m.sliderButton = sliderButton
 	sliderLabel := widget.NewLabelWithData(binding.FloatToStringWithFormat(sliderBind, "Offset (%0.2f)"))
+	widthSliderLabel := widget.NewLabel("Width (1)")
+	widthSlider := widget.NewSlider(1, 5)
+	widthSlider.Step = 1
+	widthSlider.OnChanged = WidthSliderWrapper(g, widthSliderLabel)
+	m.widthSlider = widthSlider
 
-	return container.New(m, settingsLabel, container.NewVBox(selector, sliderLabel, slider, sliderButton))
+	lineSelector := widget.NewSelect([]string{"bresenham", "bresenhamsymmetric"}, LineSelectorWrapper(g))
+	lineSelector.SetSelectedIndex(0)
+	m.lineSelector = lineSelector
+
+	return container.New(m, settingsLabel, container.NewVBox(selector, sliderLabel, slider, sliderButton, widthSliderLabel, widthSlider, lineSelector))
 }

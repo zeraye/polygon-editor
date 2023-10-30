@@ -35,24 +35,6 @@ func createOffsetPointCustom2(prev, curr int, points []*geom.Point, offset float
 			points[curr].X+(normsCustom2(prev, points).X+normsCustom2(curr, points).X)*q,
 			points[curr].Y+(normsCustom2(prev, points).Y+normsCustom2(curr, points).Y)*q,
 		))
-	} else if cos_a > 0.99 {
-		pt1 := geom.NewPoint(points[curr].X+offset*normsCustom2(prev, points).X, points[curr].Y+offset*normsCustom2(prev, points).Y)
-		pt2 := geom.NewPoint(points[curr].X+offset*normsCustom2(curr, points).X, points[curr].Y+offset*normsCustom2(curr, points).Y)
-		offset_points = append(offset_points, pt1, pt2)
-	} else {
-		vec := geom.GetAvgUnitVector(
-			geom.NewPoint(-normsCustom2(prev, points).Y, normsCustom2(prev, points).X),
-			geom.NewPoint(normsCustom2(curr, points).Y, -normsCustom2(curr, points).X),
-		)
-		ptQ := geom.TranslatePoint(points[curr], math.Abs(offset)*vec.X, math.Abs(offset)*vec.Y)
-		pt1 := geom.TranslatePoint(ptQ, offset*vec.Y, offset*(-vec.X))
-		pt2 := geom.TranslatePoint(ptQ, offset*(-vec.Y), offset*vec.X)
-		pt3 := geom.GetPerpendic(points[prev], normsCustom2(prev, points), offset)
-		pt4 := geom.GetPerpendic(points[curr], normsCustom2(prev, points), offset)
-		pt := geom.IntersectPoint(pt1, pt2, pt3, pt4)
-		offset_points = append(offset_points, pt)
-		offset_points = append(offset_points, geom.ReflectPoint(pt, ptQ))
-
 	}
 
 	return offset_points
