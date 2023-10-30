@@ -5,7 +5,6 @@ go 1.21
 require (
 	fyne.io/fyne/v2 v2.4.1
 	github.com/BurntSushi/toml v1.3.2
-	github.com/epit3d/goclipper2 v0.0.9
 	golang.org/x/image v0.11.0
 )
 
