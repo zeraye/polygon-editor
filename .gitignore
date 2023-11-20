@@ -1,3 +1,5 @@
 # Ignore all files in bin/ without extension
 bin/*
 !bin/*.*
+
+fyne-cross
