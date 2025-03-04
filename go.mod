@@ -5,7 +5,7 @@ go 1.21
 require (
 	fyne.io/fyne/v2 v2.4.1
 	github.com/BurntSushi/toml v1.3.2
-	golang.org/x/image v0.11.0
+	golang.org/x/image v0.18.0
 )
 
 require (
